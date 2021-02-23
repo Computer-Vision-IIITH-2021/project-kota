@@ -18,7 +18,7 @@ Multiple Degradations
 │   └── TeamKota-ProjectProposal.pdf
 ├── README.md
 ├── data
-├── requirements.txt
+├── environment.yml
 └── src
     ├── main.py
     ├── model.py
