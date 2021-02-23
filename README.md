@@ -1,4 +1,5 @@
 ## Project 7
 - Topic - Image Super Resolution
-- Paper - Image Super-Resolution using Deep Convolutional Nets 
-- Paper Link - https://arxiv.org/abs/1501.00092
+- Paper - Learning a Single Convolutional Super-Resolution Network for
+Multiple Degradations
+- Paper Link - https://arxiv.org/pdf/1712.06116v2.pdf
