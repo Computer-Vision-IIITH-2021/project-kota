@@ -10,5 +10,19 @@ Multiple Degradations
 - `pytorch=1.7.1`
 - `cudatoolkit=10.2`
 
+## Code structure
+```
+.
+├── Project-Proposal
+│   ├── Method.pdf
+│   └── TeamKota-ProjectProposal.pdf
+├── README.md
+├── data
+├── requirements.txt
+└── src
+    ├── main.py
+    ├── model.py
+    └── utils.py
+```
 ## Setup env
 - `conda create --name super-res --file requirements.txt`
