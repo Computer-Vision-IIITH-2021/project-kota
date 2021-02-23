@@ -11,4 +11,4 @@ Multiple Degradations
 - `cudatoolkit=10.2`
 
 ## Setup env
-- `conda create --name super-res --file requirements.txt`
+- `conda env create --file environment.yaml`
