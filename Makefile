@@ -12,6 +12,6 @@ help:
 ENV_NAME := super-res
 run:
 	@cd src;\
-	$(CONDA_ACTIVATE) $ENV_NAME;\
+	$(CONDA_ACTIVATE) $(ENV_NAME);\
 	python main.py;\
 	cd ..;
