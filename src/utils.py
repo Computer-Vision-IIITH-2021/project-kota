@@ -29,3 +29,54 @@ class Utils:
         # remove zip file
         if remove_zip:
             os.system("rm " + ZIP_FILE_PATH)
+
+
+class Kernels(object):
+    def __init__(self, kernels, proj_matrix):
+        self.kernels = kernels
+        self.P = proj_matrix
+
+        # kernels.shape == [H, W, C, N], C: no. of channels / N: no. of kernels
+        self.kernels_proj = np.matmul(self.P,
+                                      self.kernels.reshape(self.P.shape[-1],
+                                                           self.kernels.shape[-1]))
+
+        self.indices = np.array(range(self.kernels.shape[-1]))
+        self.randkern = self.RandomKernel(self.kernels, [self.indices])
+
+    def RandomBlur(self, image):
+        kern = next(self.randkern)
+        return Image.fromarray(convolve(image, kern, mode='nearest'))
+
+    def ConcatDegraInfo(self, image):
+        image = np.asarray(image)   # PIL Image to numpy array
+        h, w = list(image.shape[0:2])
+        proj_kernl = self.kernels_proj[:, self.randkern.index - 1]  
+        n = len(proj_kernl)  # dim. of proj_kernl
+
+        maps = np.ones((h, w, n))
+        for i in range(n):
+            maps[:, :, i] = proj_kernl[i] * maps[:, :, i]
+        image = np.concatenate((image, maps), axis=-1)
+        return image
+
+    class RandomKernel(object):
+        def __init__(self, kernels, indices):
+            self.len = kernels.shape[-1]
+            self.indices = indices
+            np.random.shuffle(self.indices[0])
+            self.kernels = kernels[:, :, :, self.indices[0]]
+            self.index = 0
+
+        def __iter__(self):
+            return self
+
+        def __next__(self):
+            if (self.index == self.len):
+                np.random.shuffle(self.indices[0])
+                self.kernels = self.kernels[:, :, :, self.indices[0]]
+                self.index = 0
+
+            n = self.kernels[:, :, :, self.index]
+            self.index += 1
+            return n
