@@ -2,7 +2,7 @@ import argparse
 
 import torch
 from torch.utils import data
-
+from train import Train
 from utils import Utils
 from dataset import DIV2K_train
 
