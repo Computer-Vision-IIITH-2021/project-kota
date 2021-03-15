@@ -29,7 +29,9 @@ class DIV2K_train(data.Dataset):
         self.image_paths = []
 
         for i in range(1,800+1):
-            name = "0" * (4-int(math.log10(i))+1) + str(i)
+            name = '0000' + str(i)
+            name = name[:-4]
+            # name = "0" * (4-int(math.log10(i))+1) + str(i)
             Y_path = config.y_path + name + '.png'
             self.image_paths.append(Y_path)
 
