@@ -7,7 +7,7 @@ from scipy.ndimage import convolve
 class Kernels(object):
     def __init__(self, scaleFactor):
         # big-d: the class has other values initialsed, do we not need them?
-        self.allkernels = []
+        self.kernels = []
         self.scaleFactor = scaleFactor
         
         # sai: Add anisotropic kernels
@@ -15,12 +15,12 @@ class Kernels(object):
         for width in widths:
             kernel = self.isogkern(15,width)
             degradation = self.PCA(kernel)
-            self.allkernels.append([kernel,degradation])
+            self.kernels.append([kernel,degradation])
             
 
 
     def Blur(self, image, kernel):
-        return Image.fromarray(self.convolve(image, kernel, mode='nearest'))
+        return Image.fromarray(convolve(image, np.array([kernel, kernel, kernel]), mode='nearest'))
 
     def ConcatDegraInfo(self, image, degradation):
         h, w = list(image.shape[0:2])

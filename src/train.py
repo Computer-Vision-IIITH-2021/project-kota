@@ -41,7 +41,7 @@ class Train(object):
         if self.use_tensorboard:
             self.build_tensorboard()
 
-        Start with trained model
+        # Start with trained model
         if self.trained_model:
             self.load_trained_model()
 

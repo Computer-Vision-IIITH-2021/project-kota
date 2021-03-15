@@ -7,7 +7,7 @@ from kernels import Kernels
 from torchvision import transforms
 import math
 import random
-import torchvision.transforms.functional as TF
+# from torchvision.transforms.functional import InterpolationMode
 
 def Scaling(image):
     return np.array(image) / 255.0
@@ -56,12 +56,13 @@ class DIV2K_train(data.Dataset):
         transform = transforms.RandomCrop(self.image_size * self.scale_factor)
         hr_image = transform(Y_image)
 
-        kernel, degradinfo = next(self.kernels)
+        kernel, degradinfo = random.choice(self.kernels.kernels)
         # input (low-resolution image)
 
         transform = transforms.Compose([
                             transforms.Lambda(lambda x: self.kernels.Blur(x,kernel)),
-                            transforms.Resize((self.image_size, self.image_size),interpolation=TF.InterpolationMode.BICUBIC),
+                            # transforms.Resize((self.image_size, self.image_size), interpolation=InterpolationMode.BICUBIC),
+                            transforms.Resize((self.image_size, self.image_size)),
                             transforms.Lambda(lambda x: Scaling(x)),
                             transforms.Lambda(lambda x: self.kernels.ConcatDegraInfo(x,degradinfo)),
                             AddGaussianNoise()
