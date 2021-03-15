@@ -61,9 +61,9 @@ class Train(object):
         S = torch.load(filename)
         self.model.load_state_dict(S['SR'])
 
-    # def build_tensorboard(self):
-    #     from logger import Logger
-    #     self.logger = Logger(self.log_path)
+    def build_tensorboard(self):
+        from logger import Logger
+        self.logger = Logger(self.log_path)
 
     def update_lr(self, lr):
         for param_group in self.optimizer.param_groups:
