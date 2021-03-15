@@ -3,6 +3,7 @@ from PIL import Image
 import numpy as np
 from scipy import signal
 from scipy.ndimage import convolve
+from sklearn.decomposition import PCA
 
 class Kernels(object):
     def __init__(self, scaleFactor):
@@ -32,12 +33,21 @@ class Kernels(object):
         return image
     
     def PCA(self, data, k=15):
-        X = torch.from_numpy(data)
-        X_mean = torch.mean(X, 0)
-        X = X - X_mean.expand_as(X)
+        # old_X = torch.from_numpy(data)
+        # old_X = torch.from_numpy(data.reshape(1,-1))
+        pca = PCA(n_components=15, svd_solver='full')
+        print(data.reshape(-1, 1).shape)
+        X = pca.fit_transform(data.reshape(-1, 1))
+        # print(type(X))
+        return torch.from_numpy(X)
 
-        v, w = torch.eig(torch.mm(X, torch.t(X)), eigenvectors=True)
-        return torch.mm(w[:k, :], X)
+        # X = torch.from_numpy(data.flatten())
+        # X_mean = torch.mean(X, 0)
+        # X = X - X_mean.expand_as(X)
+
+        # v, w = torch.eig(torch.mm(X, torch.t(X)), eigenvectors=True)
+        # return torch.mm(w[:k, :], X)
+
 
     def isogkern(self, kernlen, std):
         gkern1d = signal.gaussian(kernlen, std=std).reshape(kernlen, 1)
