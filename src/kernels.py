@@ -10,14 +10,14 @@ class Kernels(object):
         # big-d: the class has other values initialsed, do we not need them?
         self.kernels = []
         self.scaleFactor = scaleFactor
-        
+
         # sai: Add anisotropic kernels
         widths = [x/10 for x in range(2, 10*self.scaleFactor + 1)]
         for width in widths:
             kernel = self.isogkern(15,width)
             degradation = self.PCA(kernel)
             self.kernels.append([kernel,degradation])
-            
+
 
 
     def Blur(self, image, kernel):
@@ -31,22 +31,14 @@ class Kernels(object):
             maps[:, :, i] = degradation[i] * maps[:, :, i]
         image = np.concatenate((image, maps), axis=-1)
         return image
-    
-    def PCA(self, data, k=15):
-        # old_X = torch.from_numpy(data)
-        # old_X = torch.from_numpy(data.reshape(1,-1))
-        pca = PCA(n_components=15, svd_solver='full')
-        print(data.reshape(-1, 1).shape)
-        X = pca.fit_transform(data.reshape(-1, 1))
-        # print(type(X))
-        return torch.from_numpy(X)
 
-        # X = torch.from_numpy(data.flatten())
-        # X_mean = torch.mean(X, 0)
-        # X = X - X_mean.expand_as(X)
+    def PCA(data, k=1):
+        X = torch.from_numpy(data)
+        X_mean = torch.mean(X, 0)
+        X = X - X_mean.expand_as(X)
 
-        # v, w = torch.eig(torch.mm(X, torch.t(X)), eigenvectors=True)
-        # return torch.mm(w[:k, :], X)
+        v, w = torch.eig(torch.mm(X, torch.t(X)), eigenvectors=True)
+        return torch.mm(w[:k, :], X).flatten()
 
 
     def isogkern(self, kernlen, std):
