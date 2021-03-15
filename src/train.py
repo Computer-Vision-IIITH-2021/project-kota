@@ -24,11 +24,11 @@ class Train(object):
         self.beta1 = config.beta1
         self.beta2 = config.beta2
         self.trained_model = config.trained_model
-        # self.use_tensorboard = config.use_tensorboard
+        self.use_tensorboard = config.use_tensorboard
 
         # Path and step size
-        # self.log_path = config.log_path
-        # self.result_path = config.result_path
+        self.log_path = config.log_path
+        self.result_path = config.result_path
         self.model_save_path = config.model_save_path
         self.log_step = config.log_step
         self.sample_step = config.sample_step
@@ -38,12 +38,12 @@ class Train(object):
         self.device = config.device
 
         self.build_model()
-        # if self.use_tensorboard:
-        #     self.build_tensorboard()
+        if self.use_tensorboard:
+            self.build_tensorboard()
 
-        # Start with trained model
-        # if self.trained_model:
-        #     self.load_trained_model()
+        Start with trained model
+        if self.trained_model:
+            self.load_trained_model()
 
     def build_model(self):
         # model and optimizer
