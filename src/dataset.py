@@ -2,10 +2,13 @@ import torch
 from torch.utils import data
 from PIL import Image
 import h5py
+import numpy as np
 from utils import Kernels
 from torchvision import transforms
 import math
 
+def Scaling(image):
+    return np.array(image) / 255.0
 
 class DIV2K_train(data.Dataset):
     def __init__(self, config=None):
@@ -27,14 +30,14 @@ class DIV2K_train(data.Dataset):
         Y_path = self.image_paths[index]
 
         Y_image = Image.open(Y_path).convert('RGB')
-        X_image, Y_image = transformlr(Y_image)
+        X_image, Y_image = self.transformlr(Y_image)
 
         return X_image.to(torch.float64), Y_image.to(torch.float64)
     
     def __len__(self):
         return len(self.image_paths)
 
-    def transformlr(Y_image):
+    def transformlr(self, Y_image):
         transform = transforms.RandomCrop(self.image_size * self.scale_factor)
         hr_image = transform(Y_image)
 
@@ -43,6 +46,7 @@ class DIV2K_train(data.Dataset):
         #TO DO: Add AWGN noise
         transform = transforms.Compose([
                             transforms.Lambda(lambda x: self.kernels.Blur(x,kernel)),
+                            # ainsley, padhi: where did `interpolation` come from ?
                             transforms.Resize((self.image_size, self.image_size),interpolation=InterpolationMode.BICUBIC),
                             transforms.Lambda(lambda x: Scaling(x)),
                             transforms.Lambda(lambda x: self.kernels.ConcatDegraInfo(x,degradinfo))
