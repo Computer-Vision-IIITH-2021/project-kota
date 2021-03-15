@@ -27,7 +27,7 @@ class SRMD(nn.Module):
             bn = nn.BatchNorm2d(conv_dim)
             relu = nn.ReLU()
 
-            layers.append([conv2d, bn, relu])
+            layers += [conv2d, bn, relu]
 
             in_dim = conv_dim
 

@@ -1,15 +1,19 @@
 import torch
 from torch.utils import data
 from PIL import Image
-import h5py
-from utils import Kernels
+# import h5py
+import numpy as np
+from kernels import Kernels
 from torchvision import transforms
 import math
 import random
+import torchvision.transforms.functional as TF
 
+def Scaling(image):
+    return np.array(image) / 255.0
 
 class AddGaussianNoise(object):
-    def __init__(self, mean=0., std=float(random.randint(76)):
+    def __init__(self, mean=0., std=float(random.randint(0, 76))):
         self.std = std
         self.mean = mean
         
@@ -38,15 +42,15 @@ class DIV2K_train(data.Dataset):
     def __getiterm__(self, index):
         Y_path = self.image_paths[index]
 
-        Y_image = Image.open(Y_path).convert('RGB')
-        X_image, Y_image = transformlr(Y_image)
+        Y_image = Image.open(Y_path).convert('RGB') # hr image
+        X_image, Y_image = self.transformlr(Y_image)
 
         return X_image.to(torch.float64), Y_image.to(torch.float64)
     
     def __len__(self):
         return len(self.image_paths)
 
-    def transformlr(Y_image):
+    def transformlr(self, Y_image):
         transform = transforms.RandomCrop(self.image_size * self.scale_factor)
         hr_image = transform(Y_image)
 
@@ -55,9 +59,9 @@ class DIV2K_train(data.Dataset):
 
         transform = transforms.Compose([
                             transforms.Lambda(lambda x: self.kernels.Blur(x,kernel)),
-                            transforms.Resize((self.image_size, self.image_size),interpolation=InterpolationMode.BICUBIC),
+                            transforms.Resize((self.image_size, self.image_size),interpolation=TF.InterpolationMode.BICUBIC),
                             transforms.Lambda(lambda x: Scaling(x)),
-                            transforms.Lambda(lambda x: self.kernels.ConcatDegraInfo(x,degradinfo))
+                            transforms.Lambda(lambda x: self.kernels.ConcatDegraInfo(x,degradinfo)),
                             AddGaussianNoise()
                     ])
         lr_image = transform(hr_image)

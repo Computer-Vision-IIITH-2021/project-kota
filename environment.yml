@@ -7,3 +7,5 @@ dependencies:
   - torchaudio
   - pytorch
   - torchvision
+  - scipy
+  - visdom
