@@ -4,35 +4,30 @@ from PIL import Image
 import h5py
 from utils import Kernels
 from torchvision import transforms
+import math
 
 
 class DIV2K_train(data.Dataset):
     def __init__(self, config=None):
-        # ids are from 0001 to 0800
-        # image paths = [[X_root/0001x2.png, Y_root/0001.png], ..., []]
+
         self.image_paths = []
+
         for i in range(1,800+1):
-            name = '0000' + str(i)
-            name = name[:-4]
-            X_path = config.x_path + name + 'x' + str(config.scale_factor) + '.png'
+            name = "0" * (4-int(math.log10(i))+1) + str(i)
             Y_path = config.y_path + name + '.png'
-            self.image_paths.append([X_path, Y_path])
+            self.image_paths.append(Y_path)
+        
         self.scale_factor = config.scale_factor
         self.image_size = config.image_size
-        filepath = 'kernels/SRMDNFx' + str(config.scale_factor) + '.mat'
-        f = h5py.File(filepath, 'r')
-        K, P = extract_KP(f, config.scale_factor)
-        self.randkern = Kernels(K, P)
+        
+        self.kernels = Kernels(self.scale_factor)
 
 
     def __getiterm__(self, index):
-        image_paths = self.image_paths[index]
-        X_path, Y_path = image_paths[0], image_paths[1]
+        Y_path = self.image_paths[index]
 
-        X_image = Image.open(X_path).convert('RGB')
         Y_image = Image.open(Y_path).convert('RGB')
-
-        #X_image, Y_image = transformlr(Y_image)
+        X_image, Y_image = transformlr(Y_image)
 
         return X_image.to(torch.float64), Y_image.to(torch.float64)
     
@@ -43,12 +38,14 @@ class DIV2K_train(data.Dataset):
         transform = transforms.RandomCrop(self.image_size * self.scale_factor)
         hr_image = transform(Y_image)
 
+        kernel, degradinfo = next(self.kernels)
         # input (low-resolution image)
+        #TO DO: Add AWGN noise
         transform = transforms.Compose([
-                            transforms.Lambda(lambda x: self.randkern.RandomBlur(x)),
-                            transforms.Resize((self.image_size, self.image_size)),
+                            transforms.Lambda(lambda x: self.kernels.Blur(x,kernel)),
+                            transforms.Resize((self.image_size, self.image_size),interpolation=InterpolationMode.BICUBIC),
                             transforms.Lambda(lambda x: Scaling(x)),
-                            transforms.Lambda(lambda x: self.randkern.ConcatDegraInfo(x))
+                            transforms.Lambda(lambda x: self.kernels.ConcatDegraInfo(x,degradinfo))
                     ])
         lr_image = transform(hr_image)
 
@@ -56,19 +53,4 @@ class DIV2K_train(data.Dataset):
         lr_image, hr_image = transform(lr_image), transform(hr_image)
         return lr_image, hr_image
 
-def extract_KP(f, scale_factor = 2):
-    P = np.array(f['net/meta/P']).T
-
-    directKernel = None
-    if scale_factor != 4:
-        directKernel = np.array(f['net/meta/directKernel']).transpose(3, 2, 1, 0)
-
-    AtrpGaussianKernels = np.array(f['net/meta/AtrpGaussianKernel']).transpose(3, 2, 1, 0)
-
-    if directKernel is None:
-        K = AtrpGaussianKernels
-    else:
-        K = np.concatenate((directKernel, AtrpGaussianKernels), axis=-1)
-
-    return K, P
 
