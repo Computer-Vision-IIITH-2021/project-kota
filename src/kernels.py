@@ -13,11 +13,18 @@ class Kernels(object):
 
         # sai: Add anisotropic kernels
         widths = [x/10 for x in range(2, 10*self.scaleFactor + 1)]
-        for width in widths:
+        
+        self.allkernels = np.zeros((len(widths),15,15))
+        for index, width in enumerate(widths):
             ker = self.isogkern(15,width)
-            degradation = self.PCA(ker)
-            self.allkernels.append([ker,degradation])
+            self.allkernels[index,:,:] = ker
 
+        self.degradation = self.PCA()
+        temp = []
+        for index in range(len(self.allkernels)):
+            temp.append([self.allkernels[index,:,:],self.degradation[index]])
+        
+        self.allkernels = temp
 
 
     def Blur(self, image, kernel):
@@ -32,14 +39,12 @@ class Kernels(object):
         image = np.concatenate((image, maps), axis=-1)
         return image
 
-    def PCA(self, ker, k=1):
+    def PCA(self, k=15):
 
-        X = torch.from_numpy(ker)
-        X_mean = torch.mean(X, 0)
-        X = X - X_mean.expand_as(X)
-
-        v, w = torch.eig(torch.mm(X, torch.t(X)), eigenvectors=True)
-        return torch.mm(w[:k, :], X).flatten()
+        data = self.allkernels.reshape(-1,225)
+        pca = PCA(n_components=k)
+        new_data = pca.fit_transform(data)
+        return torch.from_numpy(new_data)        
 
 
     def isogkern(self, kernlen, std):
