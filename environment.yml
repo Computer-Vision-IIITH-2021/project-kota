@@ -11,3 +11,4 @@ dependencies:
   - visdom
   - scikit-learn
   - jsonpatch
+  - pytorch-lightning
