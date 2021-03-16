@@ -1,7 +1,9 @@
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import pytorch_lightning as pl
 
-class SRMD(nn.Module):
+class SRMD(pl.LightningModule):
     # number of conv layers = 12; given in paper
     def __init__(self, conv_layers=12, channels=18, conv_dim=128, scale_factor=2): 
         super(SRMD, self).__init__()
@@ -18,6 +20,31 @@ class SRMD(nn.Module):
         x = self.conv_layer(x)
         return x
 
+    def configure_optimizers(self):
+        optimiser = torch.optim.Adam(self.parameters(), lr=1e-3)
+        return optimiser
+
+    def training_step(self, batch, batch_idx):
+        # fill training step here
+        x, y = next(batch)
+        out = self.forward(x)
+        loss = F.mse_loss(out, y)
+        self.log('train_loss', loss)
+        return loss
+    
+    def validation_step(self, batch, batch_idx):
+        x, y = next(batch)
+        out = self.forward(x)
+        val_loss = F.mse_loss(out, y)
+        self.log('val_loss', val_loss)
+        return val_loss
+
+    def test_step(self, batch, batch_idx):
+        x, y = next(batch)
+        out = self.forward(x)
+        test_loss = F.mse_loss(out, y)
+        self.log('test_loss', test_loss)
+        return test_loss
 
     def create_layers(self, conv_layers, channels, conv_dim):
         layers = []

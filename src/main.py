@@ -5,6 +5,8 @@ from torch.utils import data
 from train import Train
 from utils import Utils
 from dataset import DIV2K_train
+import pytorch_lightning as pl
+from model import SRMD
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
@@ -59,7 +61,12 @@ if __name__=='__main__':
                                   batch_size=config.batch_size,
                                   shuffle=True,
                                   num_workers=config.num_workers)
-    training = Train(data_loader, config)
-    training.train()
+    
+    srmd = SRMD()
+    print(srmd)
+    trainer = pl.Trainer(gpus = [2, 3])
+
+    trainer.fit(srmd, data_loader)
+
 
     print("DONE BOOM BOOM!!")

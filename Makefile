@@ -18,5 +18,5 @@ visdom:
 run:
 	@cd src;\
 	$(CONDA_ACTIVATE) $(ENV_NAME);\
-	CUDA_VISIBLE_DEVICES=2,3 python main.py;\
+	python main.py;\
 	cd ..;
