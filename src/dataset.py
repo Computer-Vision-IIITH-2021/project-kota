@@ -45,9 +45,9 @@ class DIV2K_train(data.Dataset):
 
         Y_image = Image.open(Y_path).convert('RGB') # hr image
         Y_image.save("ogyimage"+str(index)+".jpg")
-        X_image, Y_image = self.transformlr(Y_image)
-        save_image(X_image, "transximage"+str(index)+".jpg")
-        save_image(Y_image, "transyimage"+str(index)+".jpg")
+        X_image, Y_image = self.transformlr(Y_image,index)
+        # save_image(X_image, "transximage"+str(index)+".jpg")
+        # save_image(Y_image, "transyimage"+str(index)+".jpg")
         # X_image.save("transximage"+str(index)+".jpg")
         # Y_image.save("transyimage"+str(index)+".jpg")
 
@@ -56,7 +56,7 @@ class DIV2K_train(data.Dataset):
     def __len__(self):
         return len(self.image_paths)
 
-    def transformlr(self, Y_image):
+    def transformlr(self, Y_image,index):
         transform = transforms.RandomCrop(self.image_size * self.scale_factor)
         hr_image = transform(Y_image)
 
@@ -71,7 +71,8 @@ class DIV2K_train(data.Dataset):
                             AddGaussianNoise()
                     ])
         lr_image = transform(hr_image)
-
+        lr_image.save("transximage"+str(index)+".jpg")
+        hr_image.save("transyimage"+str(index)+".jpg")
         transform = transforms.ToTensor()
         lr_image, hr_image = transform(lr_image), transform(hr_image)
         return lr_image, hr_image
