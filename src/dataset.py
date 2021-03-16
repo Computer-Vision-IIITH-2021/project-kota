@@ -59,7 +59,7 @@ class DIV2K_train(data.Dataset):
     def transformlr(self, Y_image,index):
         transform = transforms.RandomCrop(self.image_size * self.scale_factor)
         hr_image = transform(Y_image)
-
+        print(hr_image.shape,index)
         kernel, degradinfo = random.choice(self.kernels.allkernels)
         # input (low-resolution image)
 
@@ -71,12 +71,16 @@ class DIV2K_train(data.Dataset):
                             AddGaussianNoise()
                     ])
         lr_image = transform(hr_image)
+        # print(2)
+        print(lr_image.shape,index)
         # lr_image.save("transximage"+str(index)+".jpg")
         # hr_image.save("transyimage"+str(index)+".jpg")
-        im = Image.fromarray(lr_image)
-        im.save("transximage"+str(index)+".jpg")
-        im = Image.fromarray(hr_image)
-        im.save("transyimage"+str(index)+".jpg")
+        # im = Image.fromarray(lr_image)
+        # im.save("transximage"+str(index)+".jpg")
+        # im = Image.fromarray(hr_image)
+        # im.save("transyimage"+str(index)+".jpg")
         transform = transforms.ToTensor()
         lr_image, hr_image = transform(lr_image), transform(hr_image)
+        print(lr_image.shape,index)
+        print(hr_image.shape,index)
         return lr_image, hr_image
