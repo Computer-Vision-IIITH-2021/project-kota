@@ -43,10 +43,10 @@ class DIV2K_train(data.Dataset):
         Y_path = self.image_paths[index]
 
         Y_image = Image.open(Y_path).convert('RGB') # hr image
-        Y_image = Y_image.save("ogyimage"+str(index)+".jpg")
+        Y_image.save("ogyimage"+str(index)+".jpg")
         X_image, Y_image = self.transformlr(Y_image)
-        X_image = X_image.save("transximage"+str(index)+".jpg")
-        Y_image = Y_image.save("transyimage"+str(index)+".jpg")
+        X_image.save("transximage"+str(index)+".jpg")
+        Y_image.save("transyimage"+str(index)+".jpg")
 
         return X_image.to(torch.float64), Y_image.to(torch.float64)
 
