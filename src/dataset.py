@@ -6,6 +6,7 @@ from kernels import Kernels
 from torchvision import transforms
 import math
 import random
+from torchvision.utils import save_image
 
 def Scaling(image):
     return np.array(image) / 255.0
@@ -45,8 +46,10 @@ class DIV2K_train(data.Dataset):
         Y_image = Image.open(Y_path).convert('RGB') # hr image
         Y_image.save("ogyimage"+str(index)+".jpg")
         X_image, Y_image = self.transformlr(Y_image)
-        X_image.save("transximage"+str(index)+".jpg")
-        Y_image.save("transyimage"+str(index)+".jpg")
+        save_image(X_image, "transximage"+str(index)+".jpg")
+        save_image(Y_image, "transyimage"+str(index)+".jpg")
+        # X_image.save("transximage"+str(index)+".jpg")
+        # Y_image.save("transyimage"+str(index)+".jpg")
 
         return X_image.to(torch.float64), Y_image.to(torch.float64)
 
