@@ -59,7 +59,7 @@ class DIV2K_train(data.Dataset):
     def transformlr(self, Y_image,index):
         transform = transforms.RandomCrop(self.image_size * self.scale_factor)
         hr_image = transform(Y_image)
-        print(hr_image.shape,index)
+        print(hr_image,index)
         kernel, degradinfo = random.choice(self.kernels.allkernels)
         # input (low-resolution image)
 
