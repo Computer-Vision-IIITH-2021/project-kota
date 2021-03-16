@@ -57,7 +57,7 @@ class DIV2K_train(data.Dataset):
         # im.save("transyimage"+str(index)+".jpg")
         im = Image.fromarray(Ximage_numpy)
         print(im.shape)
-cd        # im.save("transximage"+str(index)+".jpg")
+        # im.save("transximage"+str(index)+".jpg")
         # save_image(X_image, "transximage"+str(index)+".jpg")
         # save_image(Y_image, "transyimage"+str(index)+".jpg")
         # X_image.save("transximage"+str(index)+".jpg")
