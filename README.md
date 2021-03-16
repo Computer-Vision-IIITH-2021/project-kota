@@ -11,6 +11,9 @@ Multiple Degradations
 - create models, samples dir outside src
 - visdom not logging
 
+# Run Instructions
+1. `make visdom` on one terminal window
+2. `make run` after doing 1
 
 # Usage
 ## Requirements
