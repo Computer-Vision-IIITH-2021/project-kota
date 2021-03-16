@@ -4,6 +4,7 @@ import numpy as np
 from scipy import signal
 from scipy.ndimage import convolve
 from sklearn.decomposition import PCA
+import cv2
 
 class Kernels(object):
     def __init__(self, scaleFactor):
@@ -13,7 +14,7 @@ class Kernels(object):
 
         # sai: Add anisotropic kernels
         widths = [x/10 for x in range(2, 10*self.scaleFactor + 1)]
-        
+
         self.allkernels = np.zeros((len(widths),15,15))
         for index, width in enumerate(widths):
             ker = self.isogkern(15,width)
@@ -23,12 +24,14 @@ class Kernels(object):
         temp = []
         for index in range(len(self.allkernels)):
             temp.append([self.allkernels[index,:,:],self.degradation[index]])
-        
+
         self.allkernels = temp
 
 
     def Blur(self, image, kernel):
-        return Image.fromarray(convolve(image, np.array([kernel, kernel, kernel]), mode='nearest'))
+        image = np.asarray(image)
+        dst = cv2.filter2D(image,-1,kernel)
+        return Image.fromarray(dst)
 
     def ConcatDegraInfo(self, image, degradation):
         h, w = list(image.shape[0:2])
@@ -44,7 +47,7 @@ class Kernels(object):
         data = self.allkernels.reshape(-1,225)
         pca = PCA(n_components=k)
         new_data = pca.fit_transform(data)
-        return torch.from_numpy(new_data)        
+        return torch.from_numpy(new_data)
 
 
     def isogkern(self, kernlen, std):
