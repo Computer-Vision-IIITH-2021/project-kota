@@ -124,9 +124,12 @@ class Train(object):
 
                 tmp = nn.Upsample(scale_factor=self.scale_factor)(x.data[:,0:3,:])
                 pairs = torch.cat((tmp.data[0:2,:], reconst.data[0:2,:], y.data[0:2,:]), dim=3)
+                pairs = pairs.to('cpu')
                 grid = make_grid(pairs, 2)
                 from PIL import Image
+                tmp = tmp.to('cpu')
                 tmp = np.squeeze(grid.numpy().transpose((1, 2, 0)))
+                # tmp = torch.from_numpy(tmp)
                 tmp = (255 * tmp).astype(np.uint8)
                 Image.fromarray(tmp).save('./samples/test_%d.jpg' % (step + 1))
 

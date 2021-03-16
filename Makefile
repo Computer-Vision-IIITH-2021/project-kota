@@ -10,8 +10,13 @@ help:
 	@echo "	run python main.py"
 
 ENV_NAME := super-res
+visdom:
+	@cd src;\
+	$(CONDA_ACTIVATE) $(ENV_NAME);\
+	python -m visdom.server;\
+
 run:
 	@cd src;\
 	$(CONDA_ACTIVATE) $(ENV_NAME);\
-	python main.py;\
+	CUDA_VISIBLE_DEVICES=2,3 python main.py;\
 	cd ..;

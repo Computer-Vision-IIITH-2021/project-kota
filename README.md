@@ -7,6 +7,11 @@ Multiple Degradations
 # Note
 - code does not run in the branch
 
+# TODO
+- create models, samples dir outside src
+- visdom not logging
+
+
 # Usage
 ## Requirements
 - `python=3.8`

@@ -44,6 +44,8 @@ if __name__=='__main__':
     # device
     config.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     # print(config)
+    print("GPU available = ", torch.cuda.is_available())
+    print("# GPU = ", torch.cuda.device_count())
 
     # download data
     utils = Utils()

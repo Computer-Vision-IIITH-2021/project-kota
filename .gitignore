@@ -130,3 +130,6 @@ dmypy.json
 
 # custom
 /data
+src/samples/
+src/models
+.vscode
