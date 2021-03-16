@@ -17,6 +17,7 @@ class AddGaussianNoise(object):
         self.mean = mean
 
     def __call__(self, vec):
+        vec = np.asarray(vec)
         h, w, n = vec.shape
         return vec + np.random.rand(h,w,n) * self.std + self.mean
 
@@ -46,18 +47,7 @@ class DIV2K_train(data.Dataset):
         Y_image = Image.open(Y_path).convert('RGB') # hr image
         Y_image.save("ogyimage"+str(index)+".jpg")
         X_image, Y_image = self.transformlr(Y_image,index)
-        print(X_image.shape)
-        print(Y_image.shape)
-        Ximage_numpy = X_image.numpy()
-        Yimage_numpy = Y_image.numpy()
-        print(X_image_numpy.shape)
-        print(Y_image_numpy.shape)
-        im = Image.fromarray(Yimage_numpy)
-        print(im.shape)
-        # im.save("transyimage"+str(index)+".jpg")
-        im = Image.fromarray(Ximage_numpy)
-        print(im.shape)
-        # im.save("transximage"+str(index)+".jpg")
+
         # save_image(X_image, "transximage"+str(index)+".jpg")
         # save_image(Y_image, "transyimage"+str(index)+".jpg")
         # X_image.save("transximage"+str(index)+".jpg")
@@ -71,6 +61,9 @@ class DIV2K_train(data.Dataset):
     def transformlr(self, Y_image,index):
         transform = transforms.RandomCrop(self.image_size * self.scale_factor)
         hr_image = transform(Y_image) #image
+        print(hr_image)
+        hr_image.save("transyimage"+str(index)+".jpg")
+
         # print(hr_image,index)
         kernel, degradinfo = random.choice(self.kernels.allkernels)
         # input (low-resolution image)
@@ -78,11 +71,18 @@ class DIV2K_train(data.Dataset):
         transform = transforms.Compose([
                             transforms.Lambda(lambda x: self.kernels.Blur(x,kernel)),
                             transforms.Resize((self.image_size, self.image_size), interpolation=Image.BICUBIC),
-                            transforms.Lambda(lambda x: Scaling(x)),
                             AddGaussianNoise(),
-                            transforms.Lambda(lambda x: self.kernels.ConcatDegraInfo(x,degradinfo)),
                     ])
         lr_image = transform(hr_image) #numpy
+        print("here",lr_image.shape)
+        temp = Image.fromarray(lr_image.astype(np.uint8))
+        temp.save("transximage"+str(index)+".jpg")
+
+        transform = transforms.Compose([transforms.Lambda(lambda x: self.kernels.ConcatDegraInfo(x,degradinfo))])
+        lr_image = transform(lr_image)
+
+
+
         # print(2)
         # print(lr_image.shape,index)
         # lr_image.save("transximage"+str(index)+".jpg")
