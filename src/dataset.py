@@ -73,7 +73,7 @@ class DIV2K_train(data.Dataset):
                             transforms.Resize((self.image_size, self.image_size), interpolation=Image.BICUBIC)
                             # AddGaussianNoise(),
                     ])
-        lr_image = transform(hr_image) #numpy
+        lr_image = np.asarray(transform(hr_image)) #numpy
         print("here",lr_image.shape)
         temp = Image.fromarray(lr_image.astype(np.uint8))
         temp.save("transximage"+str(index)+".jpg")
