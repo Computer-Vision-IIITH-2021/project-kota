@@ -8,15 +8,15 @@ from sklearn.decomposition import PCA
 class Kernels(object):
     def __init__(self, scaleFactor):
         # big-d: the class has other values initialsed, do we not need them?
-        self.kernels = []
+        self.allkernels = []
         self.scaleFactor = scaleFactor
 
         # sai: Add anisotropic kernels
         widths = [x/10 for x in range(2, 10*self.scaleFactor + 1)]
         for width in widths:
-            kernel = self.isogkern(15,width)
-            degradation = self.PCA(kernel)
-            self.kernels.append([kernel,degradation])
+            ker = self.isogkern(15,width)
+            degradation = self.PCA(ker)
+            self.allkernels.append([ker,degradation])
 
 
 
@@ -32,8 +32,9 @@ class Kernels(object):
         image = np.concatenate((image, maps), axis=-1)
         return image
 
-    def PCA(data, k=1):
-        X = torch.from_numpy(data)
+    def PCA(self, ker, k=1):
+
+        X = torch.from_numpy(ker)
         X_mean = torch.mean(X, 0)
         X = X - X_mean.expand_as(X)
 

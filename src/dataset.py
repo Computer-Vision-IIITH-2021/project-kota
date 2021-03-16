@@ -1,13 +1,11 @@
 import torch
 from torch.utils import data
 from PIL import Image
-# import h5py
 import numpy as np
 from kernels import Kernels
 from torchvision import transforms
 import math
 import random
-# from torchvision.transforms.functional import InterpolationMode
 
 def Scaling(image):
     return np.array(image) / 255.0
@@ -17,8 +15,9 @@ class AddGaussianNoise(object):
         self.std = std
         self.mean = mean
 
-    def __call__(self, tensor):
-        return tensor + torch.randn(tensor.size()) * self.std + self.mean
+    def __call__(self, vec):
+        h, w, n = vec.shape
+        return vec + np.random.rand(h,w,n) * self.std + self.mean
 
     def __repr__(self):
         return self.__class__.__name__ + '(mean={0}, std={1})'.format(self.mean, self.std)
@@ -31,7 +30,6 @@ class DIV2K_train(data.Dataset):
         for i in range(1,800+1):
             name = '0000' + str(i)
             name = name[-4:]
-            # name = "0" * (4-int(math.log10(i))+1) + str(i)
             Y_path = config.y_path + name + '.png'
             self.image_paths.append(Y_path)
 
@@ -56,13 +54,12 @@ class DIV2K_train(data.Dataset):
         transform = transforms.RandomCrop(self.image_size * self.scale_factor)
         hr_image = transform(Y_image)
 
-        kernel, degradinfo = random.choice(self.kernels.kernels)
+        kernel, degradinfo = random.choice(self.kernels.allkernels)
         # input (low-resolution image)
 
         transform = transforms.Compose([
                             transforms.Lambda(lambda x: self.kernels.Blur(x,kernel)),
-                            # transforms.Resize((self.image_size, self.image_size), interpolation=InterpolationMode.BICUBIC),
-                            transforms.Resize((self.image_size, self.image_size)),
+                            transforms.Resize((self.image_size, self.image_size), interpolation=Image.BICUBIC),
                             transforms.Lambda(lambda x: Scaling(x)),
                             transforms.Lambda(lambda x: self.kernels.ConcatDegraInfo(x,degradinfo)),
                             AddGaussianNoise()
