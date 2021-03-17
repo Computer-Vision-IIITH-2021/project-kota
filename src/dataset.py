@@ -56,7 +56,7 @@ class DIV2K_train(data.Dataset):
     def transformlr(self, Y_image,index):
         transform = transforms.RandomCrop(self.image_size * self.scale_factor)
         hr_image = transform(Y_image) #image
-        print(hr_image)
+        # print(hr_image)
         # hr_image.save("transyimage"+str(index)+".jpg")
 
         kernel, degradinfo = random.choice(self.kernels.allkernels)
@@ -68,7 +68,7 @@ class DIV2K_train(data.Dataset):
                     ])
 
         lr_image = np.asarray(transform(hr_image)) #numpy
-        print("here",lr_image.shape)
+        # print("here",lr_image.shape)
         temp = Image.fromarray(lr_image.astype(np.uint8))
         # temp.save("transximage"+str(index)+".jpg")
 
