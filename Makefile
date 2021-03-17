@@ -18,6 +18,6 @@ visdom:
 run:
 	@cd src;\
 	$(CONDA_ACTIVATE) $(ENV_NAME);\
-	conda install opencv
+	conda install -c conda-forge opencv
 	CUDA_VISIBLE_DEVICES=2,3 python main.py;\
 	cd ..;
