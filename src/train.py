@@ -126,7 +126,7 @@ class Train(object):
                 permute = [2, 1, 0]
                 # t[:, permute]
                 # img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
-                pairs = torch.cat(tmp.data[0:1,:,permute], reconst.data[0:1,:], y.data[0:1,:]), dim=3)
+                pairs = torch.cat((tmp.data[0:1,:,permute], reconst.data[0:1,:], y.data[0:1,:]), dim=3)
                 pairs = pairs.to('cpu')
                 grid = make_grid(pairs, 2)
                 from PIL import Image
