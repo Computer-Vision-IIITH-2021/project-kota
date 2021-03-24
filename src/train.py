@@ -122,12 +122,12 @@ class Train(object):
                 def to_np(x):
                     return x.data.cpu().numpy()
 
-                tmp = nn.Upsample(scale_factor=self.scale_factor)(x.data[:,:,0:3])
+                tmp = nn.Upsample(scale_factor=self.scale_factor)(x.data[:,-3:,:])
                 # tmp=x.da[:,:,:3]
-                print(tmp.shape)
-                print(tmp.data[0:2,:])
-                print(reconst.data[0:2,:])
-                print(y.data[0:2,:])
+                # print(tmp.shape)
+                # print(tmp.data[0:2,:])
+                # print(reconst.data[0:2,:])
+                # print(y.data[0:2,:])
                 # print(tmp.data[0:2,:])
 
                 pairs = torch.cat((tmp.data[0:2,:], reconst.data[0:2,:], y.data[0:2,:]), dim=3)
