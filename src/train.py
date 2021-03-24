@@ -96,8 +96,8 @@ class Train(object):
             if (step+1) % iter_per_epoch == 0:
                 data_iter = iter(self.data_loader)
 
-            actx, x, y = next(data_iter)
-            actx, x, y = actx.to(self.device),x.to(self.device), y.to(self.device)
+            x, y = next(data_iter)
+            x, y = x.to(self.device), y.to(self.device)
             y = y.to(torch.float64)
 
             out = self.model(x)
@@ -122,14 +122,7 @@ class Train(object):
                 def to_np(x):
                     return x.data.cpu().numpy()
 
-                tmp = nn.Upsample(scale_factor=self.scale_factor)(actx.data[:,:,:])
-                # tmp=x.da[:,:,:3]
-                # print(tmp.shape)
-                # print(tmp.data[0:2,:])
-                # print(reconst.data[0:2,:])
-                # print(y.data[0:2,:])
-                # print(tmp.data[0:2,:])
-
+                tmp = nn.Upsample(scale_factor=self.scale_factor)(x.data[:,0:3,:])
                 pairs = torch.cat((tmp.data[0:2,:], reconst.data[0:2,:], y.data[0:2,:]), dim=3)
                 pairs = pairs.to('cpu')
                 grid = make_grid(pairs, 2)
