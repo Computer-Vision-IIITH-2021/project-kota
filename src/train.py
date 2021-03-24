@@ -97,7 +97,7 @@ class Train(object):
                 data_iter = iter(self.data_loader)
 
             actx, x, y = next(data_iter)
-            actx, x, y = actx.to(self.device) x.to(self.device), y.to(self.device)
+            actx, x, y = actx.to(self.device), x.to(self.device), y.to(self.device)
             y = y.to(torch.float64)
 
             out = self.model(x)
