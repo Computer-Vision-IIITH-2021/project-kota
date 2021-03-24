@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-import cv2
 import os
 from torchvision.utils import save_image, make_grid
 from model import SRMD
@@ -97,8 +96,8 @@ class Train(object):
             if (step+1) % iter_per_epoch == 0:
                 data_iter = iter(self.data_loader)
 
-            x, y = next(data_iter)
-            x, y = x.to(self.device), y.to(self.device)
+            actx, x, y = next(data_iter)
+            actx, x, y = actx.to(self.device) x.to(self.device), y.to(self.device)
             y = y.to(torch.float64)
 
             out = self.model(x)
@@ -122,11 +121,9 @@ class Train(object):
 
                 def to_np(x):
                     return x.data.cpu().numpy()
-                tmp = nn.Upsample(scale_factor=self.scale_factor)(x.data[:,0:3,:])
-                permute = [2, 1, 0]
-                # t[:, permute]
-                # img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
-                pairs = torch.cat((tmp.data[0:1,:,permute], reconst.data[0:1,:], y.data[0:1,:]), dim=3)
+
+                tmp = nn.Upsample(scale_factor=self.scale_factor)(actx.data[:,:,:])
+                pairs = torch.cat((tmp.data[0:2,:], reconst.data[0:2,:], y.data[0:2,:]), dim=3)
                 pairs = pairs.to('cpu')
                 grid = make_grid(pairs, 2)
                 from PIL import Image

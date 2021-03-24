@@ -46,9 +46,9 @@ class DIV2K_train(data.Dataset):
 
         Y_image = Image.open(Y_path).convert('RGB') # hr image
         # Y_image.save("ogyimage"+str(index)+".jpg")
-        X_image, Y_image = self.transformlr(Y_image,index)
+        X_imageact,X_image, Y_image = self.transformlr(Y_image,index)
 
-        return X_image.to(torch.float64), Y_image.to(torch.float64)
+        return X_imageact.to(torch.float64), X_image.to(torch.float64), Y_image.to(torch.float64)
 
     def __len__(self):
         return len(self.image_paths)
@@ -68,8 +68,10 @@ class DIV2K_train(data.Dataset):
                     ])
 
         lr_image = np.asarray(transform(hr_image)) #numpy
+        transform = transforms.ToTensor()
+        lr_imageact= transform(lr_image)
         # print("here",lr_image.shape)
-        temp = Image.fromarray(lr_image.astype(np.uint8))
+        # temp = Image.fromarray(lr_image.astype(np.uint8))
         # temp.save("transximage"+str(index)+".jpg")
 
         transform = transforms.Compose([transforms.Lambda(lambda x: self.kernels.ConcatDegraInfo(x,degradinfo))])
@@ -77,4 +79,4 @@ class DIV2K_train(data.Dataset):
 
         transform = transforms.ToTensor()
         lr_image, hr_image = transform(lr_image), transform(hr_image)
-        return lr_image, hr_image
+        return lr_imageact,lr_image, hr_image
