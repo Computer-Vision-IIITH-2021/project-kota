@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import cv2
 import os
 from torchvision.utils import save_image, make_grid
 from model import SRMD
@@ -121,9 +122,9 @@ class Train(object):
 
                 def to_np(x):
                     return x.data.cpu().numpy()
-
                 tmp = nn.Upsample(scale_factor=self.scale_factor)(x.data[:,0:3,:])
-                pairs = torch.cat((tmp.data[0:2,:], reconst.data[0:2,:], y.data[0:2,:]), dim=3)
+                # img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+                pairs = torch.cat((cv2.cvtColor(tmp.data[0:1,:], cv2.COLOR_BGR2RGB), reconst.data[0:1,:], y.data[0:1,:]), dim=3)
                 pairs = pairs.to('cpu')
                 grid = make_grid(pairs, 2)
                 from PIL import Image
