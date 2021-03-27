@@ -4,16 +4,9 @@
 Multiple Degradations
 - Paper Link - https://arxiv.org/pdf/1712.06116v2.pdf
 
-# Note
-- code does not run in the branch
-
-# TODO
-- create models, samples dir outside src
-- visdom not logging
 
 # Run Instructions
-1. `make visdom` on one terminal window
-2. `make run` after doing 1
+1. `make run`
 
 # Usage
 ## Requirements
@@ -28,11 +21,16 @@ Multiple Degradations
 │   ├── Method.pdf
 │   └── TeamKota-ProjectProposal.pdf
 ├── README.md
+├── Makefile
 ├── data
 ├── environment.yml
 └── src
+    ├── dataset.py
+    ├── kernels.py
+    ├── logger.py
     ├── main.py
     ├── model.py
+    ├── train.py
     └── utils.py
 ```
 ## Setup env
