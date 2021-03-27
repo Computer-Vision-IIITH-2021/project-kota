@@ -24,9 +24,11 @@ Multiple Degradations
 ## Code structure
 ```
 .
-├── Project-Proposal
-│   ├── Method.pdf
-│   └── TeamKota-ProjectProposal.pdf
+├── docs
+    |__ TeamKota-MidEvalReport.pdf
+    |__ Project Proposal
+│       ├── Method.pdf
+│       └── TeamKota-ProjectProposal.pdf
 ├── README.md
 ├── data
 ├── environment.yml
