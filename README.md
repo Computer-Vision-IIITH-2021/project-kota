@@ -18,8 +18,8 @@ Multiple Degradations
 ```
 .
 ├── docs
-    |__ TeamKota-MidEvalReport.pdf
-    |__ Project Proposal
+|   ├── TeamKota-MidEvalReport.pdf
+|   ├── Project Proposal
 │       ├── Method.pdf
 │       └── TeamKota-ProjectProposal.pdf
 ├── README.md
