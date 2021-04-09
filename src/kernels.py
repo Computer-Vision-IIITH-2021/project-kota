@@ -1,4 +1,5 @@
 import cv2
+import math
 import torch
 import random
 import numpy as np
@@ -6,6 +7,7 @@ from PIL import Image
 from scipy import signal
 from scipy.ndimage import convolve
 from sklearn.decomposition import PCA
+from scipy.stats import multivariate_normal
 
 class Kernels(object):
     def __init__(self, scaleFactor):
@@ -70,7 +72,7 @@ class Kernels(object):
         return gkern2d
 
     
-    def getKernel(theta,l1,l2):
+    def getKernel(self,theta,l1,l2):
   
         v = np.dot([[math.cos(theta), -math.sin(theta)],[math.sin(theta), math.cos(theta)]],[[1],[0]])
 
@@ -84,7 +86,7 @@ class Kernels(object):
         
         for i in range(15):
             for j in range(15):
-            ker[i][j] = rv.pdf([i,j])
+                ker[i][j] = rv.pdf([i,j])
 
         ker /= np.sum(ker)
         return ker
