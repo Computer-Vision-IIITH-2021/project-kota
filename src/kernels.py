@@ -77,7 +77,7 @@ class Kernels(object):
         v = np.dot([[math.cos(theta), -math.sin(theta)],[math.sin(theta), math.cos(theta)]],[[1],[0]])
 
         V = [[v[0][0], v[1][0]],[v[1][0], -v[0][0]]]
-        D = [[l1**2, 0],[0, l2**2]]
+        D = [[l1, 0],[0, l2]]
 
         Sigma = np.dot(np.dot(V,D),np.linalg.inv(V))
         rv = multivariate_normal([7,7], Sigma)
