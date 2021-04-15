@@ -12,13 +12,13 @@ def Scaling(image):
     return np.array(image) / 255.0
 
 class AddGaussianNoise(object):
-    def __init__(self, mean=0., std=float(random.randint(0, 76))):
-        self.std = std
+    def __init__(self, mean=0.):
         self.mean = mean
 
     def __call__(self, vec):
         vec = np.asarray(vec)
         h, w, n = vec.shape
+        self.std = float(random.randint(0, 76))
         return vec + np.random.rand(h,w,n) * self.std + self.mean
 
     def __repr__(self):
@@ -64,7 +64,7 @@ class DIV2K_train(data.Dataset):
         transform = transforms.Compose([
                             transforms.Lambda(lambda x: self.kernels.Blur(x,kernel)),
                             transforms.Resize((self.image_size, self.image_size), interpolation=3),
-                            # AddGaussianNoise(),
+                            AddGaussianNoise(),
                     ])
 
         lr_image = np.asarray(transform(hr_image)) #numpy

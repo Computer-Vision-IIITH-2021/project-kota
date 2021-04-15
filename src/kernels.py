@@ -20,7 +20,7 @@ class Kernels(object):
         for count in range(10000):
     
             theta = random.random() * np.pi
-            l1 = 0.5 + random.random() * 5.5
+            l1 = 0.5 + random.random() * ((self.scaleFactor * 2 ) + 1.5)
             l2 = 0.5 + random.random() * (l1-0.5)
 
             ker = self.getKernel(theta,l1,l2)
