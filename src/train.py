@@ -7,6 +7,7 @@ import numpy as np
 import math
 import cv2
 import sys
+from piqa import SSIM
 torch.set_default_tensor_type(torch.DoubleTensor)
 
 class Train(object):
@@ -49,12 +50,12 @@ class Train(object):
 
     def calculate_psnr(img1, img2):
     # img1 and img2 have range [0, 255]
-    img1 = img1.astype(np.float64)
-    img2 = img2.astype(np.float64)
-    mse = np.mean((img1 - img2)**2)
-    if mse == 0:
-        return float('inf')
-    return 20 * math.log10(255.0 / math.sqrt(mse))
+        img1 = img1.astype(np.float64)
+        img2 = img2.astype(np.float64)
+        mse = np.mean((img1 - img2)**2)
+        if mse == 0:
+            return float('inf')
+        return 20 * math.log10(255.0 / math.sqrt(mse))
 
     def ssim(img1, img2):
         C1 = (0.01 * 255)**2
@@ -178,10 +179,12 @@ class Train(object):
 
                 tmp = nn.Upsample(scale_factor=self.scale_factor)(actx.data[:,:,:])
                 pairs = torch.cat((tmp.data[0:2,:], reconst.data[0:2,:], y.data[0:2,:]), dim=3)
-                psnrscore=calculate_psnr(reconst.data[0:2,:],y.data[0:2,:])
-                ssimscore=calculate_ssim(reconst.data[0:2,:],y.data[0:2,:])
+                psnrscore1=calculate_psnr(reconst.data[0:1,:],y.data[0:1,:])
+                ssimscore1=calculate_ssim(reconst.data[0:1,:],y.data[0:1,:])
+                psnrscore2=calculate_psnr(reconst.data[1:2,:],y.data[1:2,:])
+                ssimscore2=calculate_ssim(reconst.data[1:2,:],y.data[1:2,:])
                 with open('score.txt', 'a') as f:
-                    print('test_%d.jpg PSNR:%d SSIM:%d'.format(step + 1,psnrscore,ssimscore), file=f)
+                    print('test_%d.jpg PSNR1:%d SSIM1:%d PSNR2:%d SSIM2:%d'.format(step + 1,psnrscore1,ssimscore1,psnrscore2,ssimscore2), file=f)
                 f.close()
                 pairs = pairs.to('cpu')
                 grid = make_grid(pairs, 2)
@@ -195,6 +198,32 @@ class Train(object):
             # Save check points
             if (step+1) % self.model_save_step == 0:
                 self.save(os.path.join(self.model_save_path, '{}.pth'.format(self.trained_model)))
+    def test(self):
+        self.model.eval()
+        reconst_loss = nn.MSELoss()
+        avg_psnr=0
+        avg_ssim=0
+        class SSIMLoss(SSIM):
+            def forward(self, x, y):
+                return 1. - super().forward(x, y)
+
+        criterion_ssim = SSIMLoss()
+        data_iter = iter(self.data_loader)
+        num_iters = len(self.data_loader)
+        for step in range(num_iters):
+            actx, x, y = next(data_iter)
+            actx, x, y = actx.to(self.device), x.to(self.device), y.to(self.device)
+            y = y.to(torch.float64)
+            out = self.model(x)
+            for i in range(self.batch_size):
+                ssim = criterion_ssim(out.data[i,:], y.data[i,:])
+                avg_ssim += ssim
+            mse = reconst_loss(out, y)
+            psnr = 10 * log10(1 / mse.item())
+            avg_psnr += psnr
+        with open('testscore.txt', 'a') as f:
+            print(f'PSNR : {avg_psnr/num_iters} SSIM : {avg_ssim/num_iters}',file=f)
+        f.close()
 
     def save(self, filename):
         model = self.model.state_dict()

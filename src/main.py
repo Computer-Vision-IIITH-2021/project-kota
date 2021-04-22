@@ -16,8 +16,8 @@ if __name__=='__main__':
 
     # training settings
     parser.add_argument('--image_size', type=int, default=40)
-    parser.add_argument('--total_step', type=int, default=200000)
-    parser.add_argument('--batch_size', type=int, default=2)
+    parser.add_argument('--total_step', type=int, default=384000)
+    parser.add_argument('--batch_size', type=int, default=128)
     parser.add_argument('--num_workers', type=int, default=2)
     parser.add_argument('--num_blocks', type=int, default=11)
     parser.add_argument('--num_channels', type=int, default=18)
@@ -28,7 +28,7 @@ if __name__=='__main__':
     parser.add_argument('--beta2', type=float, default=0.999)
     parser.add_argument('--trained_model', type=int, default=None)
     parser.add_argument('--device', type=str, default='cpu')
-
+    parser.add_argument('--testflag', type=int, default=0)
     #misc
     parser.add_argument('--log_step', type=int, default=10)
     parser.add_argument('--sample_step', type=int, default=100)
