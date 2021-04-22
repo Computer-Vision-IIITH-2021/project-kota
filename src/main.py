@@ -12,14 +12,14 @@ if __name__=='__main__':
     # data path
     parser.add_argument('--x_path', type=str, default='../data/DIV2K_train_LR_bicubic/X2/')
     parser.add_argument('--y_path', type=str, default='../data/DIV2K_train_HR/')
-    parser.add_argument('--y_path2', type=str, default='../data/waterloo/')
-    parser.add_argument('--y_path3', type=str, default='../data/BSDS300/images/train')
+    parser.add_argument('--y_path2', type=str, default='../data/waterloo/*.bmp')
+    parser.add_argument('--y_path3', type=str, default='../data/BSDS300/images/train/*.jpg')
     parser.add_argument('--model_save_path', type=str, default='./models')
 
     # training settings
     parser.add_argument('--image_size', type=int, default=40)
-    parser.add_argument('--total_step', type=int, default=384000)
-    parser.add_argument('--batch_size', type=int, default=128)
+    parser.add_argument('--total_step', type=int, default=200000)
+    parser.add_argument('--batch_size', type=int, default=100)
     parser.add_argument('--num_workers', type=int, default=2)
     parser.add_argument('--num_blocks', type=int, default=11)
     parser.add_argument('--num_channels', type=int, default=18)
@@ -33,7 +33,7 @@ if __name__=='__main__':
     parser.add_argument('--testflag', type=int, default=0)
     #misc
     parser.add_argument('--log_step', type=int, default=10)
-    parser.add_argument('--sample_step', type=int, default=100)
+    parser.add_argument('--sample_step', type=int, default=10) # todo: 100
     parser.add_argument('--model_save_step', type=int, default=1000)
     parser.add_argument('--use_tensorboard', type=bool, default=True)
 
@@ -50,10 +50,10 @@ if __name__=='__main__':
     print("# GPU = ", torch.cuda.device_count())
 
     # download data
-    utils = Utils()
+    # utils = Utils()
     # utils.download('DIV2K_train_HR') # download the HR images
     # utils.download('DIV2K_train_LR_bicubic_X2') # download the LR images
-    print("[CUSTOM LOG]: data download done")
+    # print("[CUSTOM LOG]: data download done")
 
     # data loader`
     dataset = DIV2K_train(config=config)
@@ -61,6 +61,7 @@ if __name__=='__main__':
                                   batch_size=config.batch_size,
                                   shuffle=True,
                                   num_workers=config.num_workers)
+    print("Data Size:", len(data_loader.dataset))
     training = Train(data_loader, config)
     training.train()
 

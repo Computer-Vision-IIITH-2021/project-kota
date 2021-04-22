@@ -48,16 +48,17 @@ class Train(object):
         if self.trained_model:
             self.load_trained_model()
 
-    def calculate_psnr(img1, img2):
+    def calculate_psnr(self, img1, img2):
     # img1 and img2 have range [0, 255]
         img1 = img1.astype(np.float64)
+        
         img2 = img2.astype(np.float64)
         mse = np.mean((img1 - img2)**2)
         if mse == 0:
             return float('inf')
         return 20 * math.log10(255.0 / math.sqrt(mse))
 
-    def ssim(img1, img2):
+    def ssim(self, img1, img2):
         C1 = (0.01 * 255)**2
         C2 = (0.03 * 255)**2
 
@@ -80,7 +81,7 @@ class Train(object):
         return ssim_map.mean()
 
 
-    def calculate_ssim(img1, img2):
+    def calculate_ssim(self, img1, img2):
         '''calculate SSIM
         the same outputs as MATLAB's
         img1, img2: [0, 255]
@@ -88,16 +89,18 @@ class Train(object):
         if not img1.shape == img2.shape:
             raise ValueError('Input images must have the same dimensions.')
         if img1.ndim == 2:
-            return ssim(img1, img2)
+            return self.ssim(img1, img2)
         elif img1.ndim == 3:
             if img1.shape[2] == 3:
                 ssims = []
                 for i in range(3):
-                    ssims.append(ssim(img1, img2))
+                    ssims.append(self.ssim(img1, img2))
                 return np.array(ssims).mean()
             elif img1.shape[2] == 1:
-                return ssim(np.squeeze(img1), np.squeeze(img2))
+                return self.ssim(np.squeeze(img1), np.squeeze(img2))
         else:
+            print("Image 1:", img1.ndim)
+            print("Image 2:", img2.ndim)
             raise ValueError('Wrong input image dimensions.')
 
     def build_model(self):
@@ -169,6 +172,17 @@ class Train(object):
             if (step+1) % self.log_step == 0:
                 print("[{}/{}] loss: {:.4f}".format(step+1, self.total_step, loss.item()))
 
+            class SSIMLoss(SSIM):
+                def forward(self, x, y):
+                    print("SSIM Shape GPU:", x.shape, y.shape)
+                    print("SSIM type:", x.dtype, y.dtype)
+                    x, y = x.to('cpu').unsqueeze(0).type(torch.FloatTensor), y.to('cpu').unsqueeze(0).type(torch.FloatTensor)
+                    print("SSIM type double:", x.dtype, y.dtype)
+                    print("SSIM Shape CPU:", x.shape, y.shape)
+                    return 1. - super().forward(x, y)
+
+            criterion_ssim = SSIMLoss()
+                    
             # Sample images
             if (step+1) % self.sample_step == 0:
                 self.model.eval()
@@ -179,12 +193,13 @@ class Train(object):
 
                 tmp = nn.Upsample(scale_factor=self.scale_factor)(actx.data[:,:,:])
                 pairs = torch.cat((tmp.data[0:2,:], reconst.data[0:2,:], y.data[0:2,:]), dim=3)
-                psnrscore1=calculate_psnr(reconst.data[0:1,:],y.data[0:1,:])
-                ssimscore1=calculate_ssim(reconst.data[0:1,:],y.data[0:1,:])
-                psnrscore2=calculate_psnr(reconst.data[1:2,:],y.data[1:2,:])
-                ssimscore2=calculate_ssim(reconst.data[1:2,:],y.data[1:2,:])
+                psnrscore1= self.calculate_psnr(to_np(reconst.data[0,:]),to_np(y.data[0,:]))
+                print("Shape: ",tmp.data.shape, reconst.data.shape, y.data.shape)
+                ssimscore1= criterion_ssim(reconst.data[0,:],y.data[0,:])
+                psnrscore2= self.calculate_psnr(to_np(reconst.data[1,:]),to_np(y.data[1,:]))
+                ssimscore2= criterion_ssim(reconst.data[1,:],y.data[1,:])
                 with open('score.txt', 'a') as f:
-                    print('test_%d.jpg PSNR1:%d SSIM1:%d PSNR2:%d SSIM2:%d'.format(step + 1,psnrscore1,ssimscore1,psnrscore2,ssimscore2), file=f)
+                    print('test_{}.jpg PSNR1:{} SSIM1:{} PSNR2:{} SSIM2:{}'.format(step + 1,psnrscore1,ssimscore1,psnrscore2,ssimscore2), file=f)
                 f.close()
                 pairs = pairs.to('cpu')
                 grid = make_grid(pairs, 2)
@@ -219,7 +234,7 @@ class Train(object):
                 ssim = criterion_ssim(out.data[i,:], y.data[i,:])
                 avg_ssim += ssim
             mse = reconst_loss(out, y)
-            psnr = 10 * log10(1 / mse.item())
+            psnr = 10 * math.log10(1 / mse.item())
             avg_psnr += psnr
         with open('testscore.txt', 'a') as f:
             print(f'PSNR : {avg_psnr/num_iters} SSIM : {avg_ssim/num_iters}',file=f)
