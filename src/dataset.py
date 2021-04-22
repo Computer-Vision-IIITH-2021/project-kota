@@ -65,8 +65,8 @@ class DIV2K_train(data.Dataset):
 
         transform = transforms.Compose([
                             transforms.Lambda(lambda x: self.kernels.Blur(x,kernel)),
-                            transforms.Resize((self.image_size, self.image_size), interpolation=3),
-                            AddGaussianNoise(),
+                            transforms.Resize((self.image_size, self.image_size), interpolation=3)
+                            # AddGaussianNoise(),
                     ])
 
         lr_image = np.asarray(transform(hr_image)) #numpy
