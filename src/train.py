@@ -48,60 +48,60 @@ class Train(object):
         if self.trained_model:
             self.load_trained_model()
 
-    def calculate_psnr(self, img1, img2):
-    # img1 and img2 have range [0, 255]
-        img1 = img1.astype(np.float64)
-        
-        img2 = img2.astype(np.float64)
-        mse = np.mean((img1 - img2)**2)
-        if mse == 0:
-            return float('inf')
-        return 20 * math.log10(255.0 / math.sqrt(mse))
+    # def calculate_psnr(self, img1, img2):
+    # # img1 and img2 have range [0, 255]
+    #     img1 = img1.astype(np.float64)
+    #
+    #     img2 = img2.astype(np.float64)
+    #     mse = np.mean((img1 - img2)**2)
+    #     if mse == 0:
+    #         return float('inf')
+    #     return 20 * math.log10(255.0 / math.sqrt(mse))
+    #
+    # def ssim(self, img1, img2):
+    #     C1 = (0.01 * 255)**2
+    #     C2 = (0.03 * 255)**2
+    #
+    #     img1 = img1.astype(np.float64)
+    #     img2 = img2.astype(np.float64)
+    #     kernel = cv2.getGaussianKernel(11, 1.5)
+    #     window = np.outer(kernel, kernel.transpose())
+    #
+    #     mu1 = cv2.filter2D(img1, -1, window)[5:-5, 5:-5]  # valid
+    #     mu2 = cv2.filter2D(img2, -1, window)[5:-5, 5:-5]
+    #     mu1_sq = mu1**2
+    #     mu2_sq = mu2**2
+    #     mu1_mu2 = mu1 * mu2
+    #     sigma1_sq = cv2.filter2D(img1**2, -1, window)[5:-5, 5:-5] - mu1_sq
+    #     sigma2_sq = cv2.filter2D(img2**2, -1, window)[5:-5, 5:-5] - mu2_sq
+    #     sigma12 = cv2.filter2D(img1 * img2, -1, window)[5:-5, 5:-5] - mu1_mu2
+    #
+    #     ssim_map = ((2 * mu1_mu2 + C1) * (2 * sigma12 + C2)) / ((mu1_sq + mu2_sq + C1) *
+    #                                                             (sigma1_sq + sigma2_sq + C2))
+    #     return ssim_map.mean()
 
-    def ssim(self, img1, img2):
-        C1 = (0.01 * 255)**2
-        C2 = (0.03 * 255)**2
 
-        img1 = img1.astype(np.float64)
-        img2 = img2.astype(np.float64)
-        kernel = cv2.getGaussianKernel(11, 1.5)
-        window = np.outer(kernel, kernel.transpose())
-
-        mu1 = cv2.filter2D(img1, -1, window)[5:-5, 5:-5]  # valid
-        mu2 = cv2.filter2D(img2, -1, window)[5:-5, 5:-5]
-        mu1_sq = mu1**2
-        mu2_sq = mu2**2
-        mu1_mu2 = mu1 * mu2
-        sigma1_sq = cv2.filter2D(img1**2, -1, window)[5:-5, 5:-5] - mu1_sq
-        sigma2_sq = cv2.filter2D(img2**2, -1, window)[5:-5, 5:-5] - mu2_sq
-        sigma12 = cv2.filter2D(img1 * img2, -1, window)[5:-5, 5:-5] - mu1_mu2
-
-        ssim_map = ((2 * mu1_mu2 + C1) * (2 * sigma12 + C2)) / ((mu1_sq + mu2_sq + C1) *
-                                                                (sigma1_sq + sigma2_sq + C2))
-        return ssim_map.mean()
-
-
-    def calculate_ssim(self, img1, img2):
-        '''calculate SSIM
-        the same outputs as MATLAB's
-        img1, img2: [0, 255]
-        '''
-        if not img1.shape == img2.shape:
-            raise ValueError('Input images must have the same dimensions.')
-        if img1.ndim == 2:
-            return self.ssim(img1, img2)
-        elif img1.ndim == 3:
-            if img1.shape[2] == 3:
-                ssims = []
-                for i in range(3):
-                    ssims.append(self.ssim(img1, img2))
-                return np.array(ssims).mean()
-            elif img1.shape[2] == 1:
-                return self.ssim(np.squeeze(img1), np.squeeze(img2))
-        else:
-            print("Image 1:", img1.ndim)
-            print("Image 2:", img2.ndim)
-            raise ValueError('Wrong input image dimensions.')
+    # def calculate_ssim(self, img1, img2):
+    #     '''calculate SSIM
+    #     the same outputs as MATLAB's
+    #     img1, img2: [0, 255]
+    #     '''
+    #     if not img1.shape == img2.shape:
+    #         raise ValueError('Input images must have the same dimensions.')
+    #     if img1.ndim == 2:
+    #         return self.ssim(img1, img2)
+    #     elif img1.ndim == 3:
+    #         if img1.shape[2] == 3:
+    #             ssims = []
+    #             for i in range(3):
+    #                 ssims.append(self.ssim(img1, img2))
+    #             return np.array(ssims).mean()
+    #         elif img1.shape[2] == 1:
+    #             return self.ssim(np.squeeze(img1), np.squeeze(img2))
+    #     else:
+    #         print("Image 1:", img1.ndim)
+    #         print("Image 2:", img2.ndim)
+    #         raise ValueError('Wrong input image dimensions.')
 
     def build_model(self):
         # model and optimizer
@@ -172,17 +172,17 @@ class Train(object):
             if (step+1) % self.log_step == 0:
                 print("[{}/{}] loss: {:.4f}".format(step+1, self.total_step, loss.item()))
 
-            class SSIMLoss(SSIM):
-                def forward(self, x, y):
-                    print("SSIM Shape GPU:", x.shape, y.shape)
-                    print("SSIM type:", x.dtype, y.dtype)
-                    x, y = x.to('cpu').unsqueeze(0).type(torch.FloatTensor), y.to('cpu').unsqueeze(0).type(torch.FloatTensor)
-                    print("SSIM type double:", x.dtype, y.dtype)
-                    print("SSIM Shape CPU:", x.shape, y.shape)
-                    return 1. - super().forward(x, y)
+            # class SSIMLoss(SSIM):
+            #     def forward(self, x, y):
+            #         print("SSIM Shape GPU:", x.shape, y.shape)
+            #         print("SSIM type:", x.dtype, y.dtype)
+            #         x, y = x.to('cpu').unsqueeze(0).type(torch.FloatTensor), y.to('cpu').unsqueeze(0).type(torch.FloatTensor)
+            #         print("SSIM type double:", x.dtype, y.dtype)
+            #         print("SSIM Shape CPU:", x.shape, y.shape)
+            #         return 1. - super().forward(x, y)
+            #
+            # criterion_ssim = SSIMLoss()
 
-            criterion_ssim = SSIMLoss()
-                    
             # Sample images
             if (step+1) % self.sample_step == 0:
                 self.model.eval()
@@ -193,14 +193,14 @@ class Train(object):
 
                 tmp = nn.Upsample(scale_factor=self.scale_factor)(actx.data[:,:,:])
                 pairs = torch.cat((tmp.data[0:2,:], reconst.data[0:2,:], y.data[0:2,:]), dim=3)
-                psnrscore1= self.calculate_psnr(to_np(reconst.data[0,:]),to_np(y.data[0,:]))
-                print("Shape: ",tmp.data.shape, reconst.data.shape, y.data.shape)
-                ssimscore1= criterion_ssim(reconst.data[0,:],y.data[0,:])
-                psnrscore2= self.calculate_psnr(to_np(reconst.data[1,:]),to_np(y.data[1,:]))
-                ssimscore2= criterion_ssim(reconst.data[1,:],y.data[1,:])
-                with open('score.txt', 'a') as f:
-                    print('test_{}.jpg PSNR1:{} SSIM1:{} PSNR2:{} SSIM2:{}'.format(step + 1,psnrscore1,ssimscore1,psnrscore2,ssimscore2), file=f)
-                f.close()
+                # psnrscore1= self.calculate_psnr(to_np(reconst.data[0,:]),to_np(y.data[0,:]))
+                # print("Shape: ",tmp.data.shape, reconst.data.shape, y.data.shape)
+                # ssimscore1= criterion_ssim(reconst.data[0,:],y.data[0,:])
+                # psnrscore2= self.calculate_psnr(to_np(reconst.data[1,:]),to_np(y.data[1,:]))
+                # ssimscore2= criterion_ssim(reconst.data[1,:],y.data[1,:])
+                # with open('score.txt', 'a') as f:
+                #     print('test_{}.jpg PSNR1:{} SSIM1:{} PSNR2:{} SSIM2:{}'.format(step + 1,psnrscore1,ssimscore1,psnrscore2,ssimscore2), file=f)
+                # f.close()
                 pairs = pairs.to('cpu')
                 grid = make_grid(pairs, 2)
                 from PIL import Image
@@ -213,32 +213,32 @@ class Train(object):
             # Save check points
             if (step+1) % self.model_save_step == 0:
                 self.save(os.path.join(self.model_save_path, '{}.pth'.format(self.trained_model)))
-    def test(self):
-        self.model.eval()
-        reconst_loss = nn.MSELoss()
-        avg_psnr=0
-        avg_ssim=0
-        class SSIMLoss(SSIM):
-            def forward(self, x, y):
-                return 1. - super().forward(x, y)
-
-        criterion_ssim = SSIMLoss()
-        data_iter = iter(self.data_loader)
-        num_iters = len(self.data_loader)
-        for step in range(num_iters):
-            actx, x, y = next(data_iter)
-            actx, x, y = actx.to(self.device), x.to(self.device), y.to(self.device)
-            y = y.to(torch.float64)
-            out = self.model(x)
-            for i in range(self.batch_size):
-                ssim = criterion_ssim(out.data[i,:], y.data[i,:])
-                avg_ssim += ssim
-            mse = reconst_loss(out, y)
-            psnr = 10 * math.log10(1 / mse.item())
-            avg_psnr += psnr
-        with open('testscore.txt', 'a') as f:
-            print(f'PSNR : {avg_psnr/num_iters} SSIM : {avg_ssim/num_iters}',file=f)
-        f.close()
+    # def test(self):
+    #     self.model.eval()
+    #     reconst_loss = nn.MSELoss()
+    #     avg_psnr=0
+    #     avg_ssim=0
+    #     class SSIMLoss(SSIM):
+    #         def forward(self, x, y):
+    #             return 1. - super().forward(x, y)
+    #
+    #     criterion_ssim = SSIMLoss()
+    #     data_iter = iter(self.data_loader)
+    #     num_iters = len(self.data_loader)
+    #     for step in range(num_iters):
+    #         actx, x, y = next(data_iter)
+    #         actx, x, y = actx.to(self.device), x.to(self.device), y.to(self.device)
+    #         y = y.to(torch.float64)
+    #         out = self.model(x)
+    #         for i in range(self.batch_size):
+    #             ssim = criterion_ssim(out.data[i,:], y.data[i,:])
+    #             avg_ssim += ssim
+    #         mse = reconst_loss(out, y)
+    #         psnr = 10 * math.log10(1 / mse.item())
+    #         avg_psnr += psnr
+    #     with open('testscore.txt', 'a') as f:
+    #         print(f'PSNR : {avg_psnr/num_iters} SSIM : {avg_ssim/num_iters}',file=f)
+    #     f.close()
 
     def save(self, filename):
         model = self.model.state_dict()
