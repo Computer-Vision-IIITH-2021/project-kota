@@ -19,7 +19,7 @@ if __name__=='__main__':
     # training settings
     parser.add_argument('--image_size', type=int, default=40)
     parser.add_argument('--total_step', type=int, default=200000)
-    parser.add_argument('--batch_size', type=int, default=100)
+    parser.add_argument('--batch_size', type=int, default=2)
     parser.add_argument('--num_workers', type=int, default=2)
     parser.add_argument('--num_blocks', type=int, default=11)
     parser.add_argument('--num_channels', type=int, default=18)
