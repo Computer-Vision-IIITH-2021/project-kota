@@ -24,7 +24,7 @@ if __name__=='__main__':
     parser.add_argument('--num_blocks', type=int, default=11)
     parser.add_argument('--num_channels', type=int, default=18)
     parser.add_argument('--conv_dim', type=int, default=128)
-    parser.add_argument('--scale_factor', type=int, default=2)
+    parser.add_argument('--scale_factor', type=int, default=3)
     parser.add_argument('--lr', type=float, default=0.001)
     parser.add_argument('--beta1', type=float, default=0.5)
     parser.add_argument('--beta2', type=float, default=0.999)
