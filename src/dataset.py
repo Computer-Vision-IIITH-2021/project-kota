@@ -30,13 +30,13 @@ class DIV2K_train(data.Dataset):
 
         self.image_paths = []
         num_images = 30
-        for i in range(1, num_images+1):
-            name = '0000' + str(i)
-            name = name[-4:]
-            Y_path = config.y_path + name + '.png'
-            self.image_paths.append(Y_path)
+        # for i in range(1, num_images+1):
+        #     name = '0000' + str(i)
+        #     name = name[-4:]
+        #     Y_path = config.y_path + name + '.png'
+        #     self.image_paths.append(Y_path)
         self.image_paths += glob.glob(config.y_path2)
-        self.image_paths += glob.glob(config.y_path3)
+        # self.image_paths += glob.glob(config.y_path3)
         self.scale_factor = config.scale_factor
         self.image_size = config.image_size
 
