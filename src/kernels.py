@@ -8,24 +8,50 @@ from scipy import signal
 from scipy.ndimage import convolve
 from sklearn.decomposition import PCA
 from scipy.stats import multivariate_normal
+import random
+
 
 class Kernels(object):
+    # def __init__(self, scaleFactor):
+    #     # big-d: the class has other values initialsed, do we not need them?
+    #     self.allkernels = []
+    #     self.scaleFactor = scaleFactor
+    #
+    #     self.allkernels = np.zeros((10000,15,15))
+    #
+    #     for count in range(10000):
+    #
+    #         theta = random.random() * np.pi
+    #         l1 = 0.5 + random.random() * ((self.scaleFactor * 2 ) + 1.5)
+    #         l2 = 0.5 + random.random() * (l1-0.5)
+    #
+    #         ker = self.getKernel(theta,l1,l2)
+    #         self.allkernels[count,:,:] = ker
+    #
+    #     self.degradation = self.PCA()
+    #     temp = []
+    #     for index in range(len(self.allkernels)):
+    #         temp.append([self.allkernels[index,:,:],self.degradation[index]])
+    #
+    #     self.allkernels = temp
+
     def __init__(self, scaleFactor):
         # big-d: the class has other values initialsed, do we not need them?
         self.allkernels = []
         self.scaleFactor = scaleFactor
 
-        self.allkernels = np.zeros((10000,15,15))
+        # sai: Add anisotropic kernels
+        widths = [x/10 for x in range(2, 10*self.scaleFactor + 1)]
 
-        for count in range(10000):
-    
-            theta = random.random() * np.pi
-            l1 = 0.5 + random.random() * ((self.scaleFactor * 2 ) + 1.5)
-            l2 = 0.5 + random.random() * (l1-0.5)
+        self.allkernels = np.zeros((len(widths),15,15))
+        for index, width in enumerate(widths):
+            yeet=random.randint(0, 1)
+            if yeet==0:
+                ker = self.isogkern(15,width)
+            else:
+                ker = self.anisogkern(15,width,random.uniform(0.2,width))
+            self.allkernels[index,:,:] = ker
 
-            ker = self.getKernel(theta,l1,l2)
-            self.allkernels[count,:,:] = ker
-        
         self.degradation = self.PCA()
         temp = []
         for index in range(len(self.allkernels)):
@@ -63,7 +89,7 @@ class Kernels(object):
         return gkern2d
 
 
-    def anisogkern(self, kernlen, std1, std2, angle):
+    def anisogkern(self, kernlen, std1, std2):
         # big-d: angle NOT used
         gkern1d_1 = signal.gaussian(kernlen, std=std1).reshape(kernlen, 1)
         gkern1d_2 = signal.gaussian(kernlen, std=std2).reshape(kernlen, 1)
@@ -71,9 +97,9 @@ class Kernels(object):
         gkern2d = gkern2d/np.sum(gkern2d)
         return gkern2d
 
-    
+
     def getKernel(self,theta,l1,l2):
-  
+
         v = np.dot([[math.cos(theta), -math.sin(theta)],[math.sin(theta), math.cos(theta)]],[[1],[0]])
 
         V = [[v[0][0], v[1][0]],[v[1][0], -v[0][0]]]
@@ -83,7 +109,7 @@ class Kernels(object):
         rv = multivariate_normal([7,7], Sigma)
 
         ker = np.zeros((15,15))
-        
+
         for i in range(15):
             for j in range(15):
                 ker[i][j] = rv.pdf([i,j])
