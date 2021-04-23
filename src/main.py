@@ -33,7 +33,7 @@ if __name__=='__main__':
     parser.add_argument('--testflag', type=int, default=0)
     #misc
     parser.add_argument('--log_step', type=int, default=10)
-    parser.add_argument('--sample_step', type=int, default=10) # todo: 100
+    parser.add_argument('--sample_step', type=int, default=100) # todo: 100
     parser.add_argument('--model_save_step', type=int, default=1000)
     parser.add_argument('--use_tensorboard', type=bool, default=True)
 

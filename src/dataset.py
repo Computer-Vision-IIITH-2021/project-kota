@@ -29,7 +29,7 @@ class DIV2K_train(data.Dataset):
     def __init__(self, config=None):
 
         self.image_paths = []
-        num_images = 30
+        num_images = 800
         for i in range(1, num_images+1):
             name = '0000' + str(i)
             name = name[-4:]
