@@ -36,7 +36,7 @@ class DIV2K_train(data.Dataset):
             Y_path = config.y_path + name + '.png'
             self.image_paths.append(Y_path)
         # self.image_paths += glob.glob(config.y_path2)
-        self.image_paths += glob.glob(config.y_path3)
+        # self.image_paths += glob.glob(config.y_path3)
         self.scale_factor = config.scale_factor
         self.image_size = config.image_size
 
