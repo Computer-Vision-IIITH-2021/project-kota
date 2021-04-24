@@ -12,8 +12,8 @@ if __name__=='__main__':
     # data path
     parser.add_argument('--x_path', type=str, default='../data/DIV2K_train_LR_bicubic/X2/')
     parser.add_argument('--y_path', type=str, default='../data/DIV2K_train_HR/')
-    # parser.add_argument('--y_path2', type=str, default='../data/waterloo/*.bmp')
-    # parser.add_argument('--y_path3', type=str, default='../data/BSDS300/images/train/*.jpg')
+    parser.add_argument('--y_path2', type=str, default='../data/waterloo/*.bmp')
+    parser.add_argument('--y_path3', type=str, default='../data/BSDS300/images/train/*.jpg')
     parser.add_argument('--model_save_path', type=str, default='./models')
 
     # training settings

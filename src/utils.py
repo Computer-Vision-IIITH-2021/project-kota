@@ -20,7 +20,7 @@ class Utils:
         # wget: save as <dataset_name>.zip in ../data
         ZIP_FILE_PATH = self.DATA_BASE_PATH + dataset_name + ".zip"
         wget_cmd = "wget --continue " + self.URL[dataset_name] + " --output-document " + ZIP_FILE_PATH
-        
+
         os.system(wget_cmd)
 
         # unpack dataset
@@ -29,4 +29,3 @@ class Utils:
         # remove zip file
         if remove_zip:
             os.system("rm " + ZIP_FILE_PATH)
-

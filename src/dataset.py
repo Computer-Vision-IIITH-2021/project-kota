@@ -35,8 +35,8 @@ class DIV2K_train(data.Dataset):
             name = name[-4:]
             Y_path = config.y_path + name + '.png'
             self.image_paths.append(Y_path)
-        # self.image_paths += glob.glob(config.y_path2)
-        # self.image_paths += glob.glob(config.y_path3)
+        self.image_paths += glob.glob(config.y_path2)
+        self.image_paths += glob.glob(config.y_path3)
         self.scale_factor = config.scale_factor
         self.image_size = config.image_size
 
@@ -65,8 +65,8 @@ class DIV2K_train(data.Dataset):
 
         transform = transforms.Compose([
                             transforms.Lambda(lambda x: self.kernels.Blur(x,kernel)),
-                            transforms.Resize((self.image_size, self.image_size), interpolation=3)
-                            # AddGaussianNoise(),
+                            transforms.Resize((self.image_size, self.image_size), interpolation=3),
+                            AddGaussianNoise()
                     ])
 
         lr_image = np.asarray(transform(hr_image)) #numpy
