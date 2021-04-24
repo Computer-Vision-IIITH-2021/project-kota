@@ -25,6 +25,9 @@ Multiple Degradations
 ├── README.md
 ├── Makefile
 ├── data
+    ├── BSDS300
+    ├── DIV2K_train_HR
+    ├── waterloo
 ├── environment.yml
 └── src
     ├── dataset.py
@@ -46,3 +49,5 @@ Multiple Degradations
 | --- | --- | ----------- | ----------- |
 | 1 | DIV2K_train_HR | HR images  | http://data.vision.ee.ethz.ch/cvl/DIV2K/DIV2K_train_HR.zip       |
 | 2 | DIV2K_train_LR_bicubic_X2 | Bicubic x2 downscaling  | http://data.vision.ee.ethz.ch/cvl/DIV2K/DIV2K_train_LR_bicubic_X2.zip       |
+| 3 | Waterloo Exploration Database | Pristine Natural Images | http://ivc.uwaterloo.ca/database/WaterlooExploration/exploration_database_and_code.rar |
+| 4 | Berkeley Segementation Dataset and Benchmark (BSDS300) | Natural Images with greyscale and color segementation | https://www2.eecs.berkeley.edu/Research/Projects/CS/vision/bsds/BSDS300-images.tgz |
