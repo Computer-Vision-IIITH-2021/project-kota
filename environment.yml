@@ -1,0 +1,13 @@
+name: super-res
+channels:
+  - defaults
+dependencies:
+  - python=3.8
+  - cudatoolkit=10.2
+  - torchaudio
+  - pytorch
+  - torchvision
+  - scipy
+  - visdom
+  - scikit-learn
+  - jsonpatch
